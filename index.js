@@ -1,24 +1,25 @@
-// proxy.js
-import { createServer } from "socks5"; // Note the different import
+import net from "net";
 
-const server = new createServer({
-  port: 1080,
-  address: "0.0.0.0",
-  authentication: (username, password, callback) => {
-    callback(username === "your_username" && password === "your_password");
-  },
+// Tạo SOCKS5 proxy server
+const server = net.createServer((clientSocket) => {
+  console.log("Client connected");
+
+  // Tạo kết nối đến Telegram MTProto (api.telegram.org:443)
+  const telegramSocket = net.connect({
+    host: "api.telegram.org",
+    port: 443,
+  });
+
+  // Pipe dữ liệu giữa client và Telegram
+  clientSocket.pipe(telegramSocket);
+  telegramSocket.pipe(clientSocket);
+
+  clientSocket.on("end", () => {
+    console.log("Client disconnected");
+    telegramSocket.end();
+  });
 });
 
-server.listen((err) => {
-  if (err) {
-    console.error(`Server error: ${err.message}`);
-    return;
-  }
-  console.log("SOCKS5 Proxy running on port 1080");
-});
-
-server.on("connection", (socket) => {
-  console.log(
-    `New connection from ${socket.remoteAddress}:${socket.remotePort}`
-  );
+server.listen(1080, () => {
+  console.log("SOCKS5 Proxy Server running on port 1080");
 });
