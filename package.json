@@ -2,10 +2,19 @@
   "name": "telegram-proxy",
   "version": "1.0.0",
   "main": "proxy.js",
+  "type": "module",
   "scripts": {
-    "start": "bun run index.js"
+    "start": "bun run proxy.js"
   },
   "dependencies": {
+    "http-proxy": "^1.18.1",
+    "socks": "^2.8.4",
     "socks-proxy-agent": "^8.0.5"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
   }
 }
